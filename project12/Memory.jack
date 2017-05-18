@@ -1,0 +1,171 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */
+class Memory {
+    static Array ram, freeList, prevPtr;
+    static int heapBase, maxSize, next, len, allocCnt, deallocCnt;
+
+    /** Initializes the class. */
+    function void init() {
+        let ram = 0;                    // base address
+        let next = 0;                   // next ptr in base address of block
+        let len = 1;                    // size in base address of block + 1
+        let allocCnt = 0;               // no. of allocations
+        let deallocCnt = 0;             // no. of deallocations
+        let maxSize = 14334;            // 16384 - 2048 - 2
+        let heapBase = 2048;            // base address of heap
+        let freeList = heapBase;
+        let freeList[next] = null;
+        let freeList[len] = maxSize;    // max length
+        let prevPtr = null;             // first block
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return ram[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
+    }
+
+    /** Finds a best fit block */
+    function Array bestFit(int size) {
+        var Array prev, curr, best;
+        var int currSize, bestSize;
+
+        let prev  = null;                  // previous block
+        let curr = freeList;               // current block
+        let best = freeList;               // best block found
+        let bestSize = maxSize;
+
+        if (curr[next] = null) {
+            return curr;
+        }
+
+        while (~(curr = null)) {
+            let currSize = curr[len];
+            if ( ((currSize = size) | (currSize > (size+2))) & (currSize < bestSize) ) {
+                let prevPtr = prev;         // save prev block's next ptr
+                let best = curr;
+                let bestSize = currSize;
+            }
+            let prev = curr;
+            let curr = curr[next];
+        }
+        return best;
+    }
+
+    /** Defragmentation. Finds a free block to merge.
+    * Merge can occur at the top or bottom of free block.
+    */
+    function boolean merge(Array obj) {
+        var Array prev, curr;
+
+        let prev = null;
+        let curr = freeList;
+
+        if (curr[next] = null) {
+            return false;             // nothing to merge, only 1 free block
+        }
+
+        while (~(curr = null)) {
+            if (obj = (curr + curr[len] + 2)) {     // merge from top
+                let curr[len] = curr[len] + obj[len] + 2;
+                return true;
+            }
+            if ((obj + obj[len] + 2) = curr) {      // merge from bottom
+                let obj[next] = curr[next];
+                let obj[len] = obj[len] + curr[len] + 2;
+                if (~(prev = null)) {
+                    let prev[next] = obj;
+                }
+                else {
+                    let freeList = obj;
+                }
+                return true;
+            }
+            let prev = curr;
+            let curr = curr[next];
+        }
+        return false;
+    }
+
+    /** Defragmentation. Run through the freeList and merge blocks */
+    function void defrag() {
+        var Array curr, nextBlk;
+
+        let curr = freeList;
+        let nextBlk = curr[next];
+
+        if (nextBlk = null) {
+            return;                 // nothing to merge, only 1 free block
+        }
+
+        while (~(curr = null)) {
+            if (curr = (nextBlk + nextBlk[len] + 2)) {    // merge from top
+                let nextBlk[len] = nextBlk[len] + curr[len] + 2;
+                if (freeList = curr) {
+                    let freeList = nextBlk;
+                }
+            }
+            let curr = curr[next];
+        }
+        return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+    *  a reference to its base address. */
+    function int alloc(int size) {
+        var Array block;
+        var int blkLen;
+
+        let block = Memory.bestFit(size);
+
+        if ((block = null)) {
+            return -999;          // failure
+        }
+        let allocCnt = allocCnt + 1;
+
+        let blkLen = block[len];
+        if (blkLen > (size + 2)) {
+            let block[len] = blkLen - size - 2;     // resize old block
+            let block = block + blkLen - size;      // allocate new block
+            let block[len] = size;
+            let block[next] = null;
+        }
+        else {                                      // allocate whole block
+            if (~(prevPtr = null)) {
+                let prevPtr[next] = block[next];    // prev blk point to next
+                let block[next] = null;
+            }
+        }
+        return block + 2;                           // preserve header
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+    *  it available for future allocations. */
+    function void deAlloc(Array obj) {
+        let obj = obj - 2;      // reset array header
+        if (~Memory.merge(obj)) {
+            let obj[next] = freeList;
+            let freeList  = obj;
+        }
+        let deallocCnt = deallocCnt + 1;
+
+        if (allocCnt = deallocCnt) {
+            do Memory.defrag();
+        }
+        return;
+    }
+}
