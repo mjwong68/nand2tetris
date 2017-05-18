@@ -1,6 +1,4 @@
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class JackAnalyzer {
 	
@@ -30,8 +28,6 @@ public class JackAnalyzer {
         	else if (isFile) {
         		ProcessFile(file);
         	}
-        	
-    		//.Close();
         }
         else
         	System.out.println("File does not exist.");
@@ -43,7 +39,7 @@ public class JackAnalyzer {
 		
 		if (!ext.toLowerCase().equals("jack")) return;
 	
-		CompilationEngine ce = new CompilationEngine(path);
+		new CompilationEngine(path);
 	}
 
 }

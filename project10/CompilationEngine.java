@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CompilationEngine {
 	private JackTokenizer jt;
@@ -11,7 +9,6 @@ public class CompilationEngine {
 	private boolean debug			= true;		// turns on console debugging output
 	
 	private final String ANSI_RESET 	= "\u001B[0m";	// console terminal color
-	private final String ANSI_RED 		= "\u001B[31m";
 	private final String ANSI_GREEN 	= "\u001B[32m";
 	private final String ANSI_YELLOW 	= "\u001B[33m";
 	private final String ANSI_BLUE 		= "\u001B[34m";
@@ -481,8 +478,6 @@ public class CompilationEngine {
 	 */
 	public void compileTerm() {
 		
-		boolean isTerm = true;
-		
 		writeLine("<term>");
 		indent++;
 		
@@ -710,8 +705,6 @@ public class CompilationEngine {
 	 *  Used for look ahead cases
 	 */
 	private void writeToken(String s) {
-		String str = getTokenVal();
-		
 		try {
 			fw.write(indents() + s + '\n');
 		} catch (IOException e) {

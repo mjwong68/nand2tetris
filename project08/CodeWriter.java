@@ -63,17 +63,17 @@ public class CodeWriter {
 				else if (command.equals("lt"))
 					sb.append("D, JLT" 	+ '\n');
 				
-				sb.append("@SP"				   + '\n');
-				sb.append("A=M-1" 		       + '\n');
-				sb.append("M=0" 			   + '\n');		// store false (0) in SP
-				sb.append("@Continue" + label1 + '\n');
-				sb.append("0; JMP" 			   + '\n');
+				sb.append("@SP"					+ '\n');
+				sb.append("A=M-1"				+ '\n');
+				sb.append("M=0"					+ '\n');		// store false (0) in SP
+				sb.append("@Continue" + label1	+ '\n');
+				sb.append("0; JMP"				+ '\n');
 				
-				sb.append("(True" + label1	   + ")\n");	// Label True
-				sb.append("@SP"				   + '\n');
-				sb.append("A=M-1"			   + '\n');
-				sb.append("M=-1" 			   + '\n');		// store true (-1) in SP
-				sb.append("(Continue" + label1 + ")\n");	// Label Continue
+				sb.append("(True" + label1		+ ")\n");	// Label True
+				sb.append("@SP"					+ '\n');
+				sb.append("A=M-1"				+ '\n');
+				sb.append("M=-1"				+ '\n');		// store true (-1) in SP
+				sb.append("(Continue" + label1	+ ")\n");	// Label Continue
 				break;
 				
 			case "and" :
@@ -227,11 +227,11 @@ public class CodeWriter {
 		sb = new StringBuilder();
 		sb.append("// if-goto " + retLabel + '\n');
 		
-		sb.append("@SP" 		 + '\n');
-		sb.append("AM=M-1"		 + '\n');	// SP--
-		sb.append("D=M"			 + '\n');	// D = *SP. D=-1 if true
-		sb.append("@" + retLabel + '\n');
-		sb.append("D; JNE" 		 + '\n');
+		sb.append("@SP"				+ '\n');
+		sb.append("AM=M-1"			+ '\n');	// SP--
+		sb.append("D=M"				+ '\n');	// D = *SP. D=-1 if true
+		sb.append("@" + retLabel	+ '\n');
+		sb.append("D; JNE"			+ '\n');
 		writeFile();
 	}
 	
@@ -256,15 +256,15 @@ public class CodeWriter {
 			sb.append("D=A"			+ '\n');	// D = nVars
 			
 			// pushes local variables initialized to 0
-			sb.append("(Loop" + label1 + ")\n");
-			sb.append("@SP" 		   + '\n');
-			sb.append("A=M" 		   + '\n');
-			sb.append("M=0"			   + '\n');	// push 0
-			sb.append("@SP" 		   + '\n');
-			sb.append("M=M+1"		   + '\n');	// SP++
-			sb.append("D=D-1"		   + '\n');	// D--
-			sb.append("@Loop" + label1 + '\n');	// global label variable which auto increments
-			sb.append("D; JGT" 		   + '\n');		
+			sb.append("(Loop" + label1	+ ")\n");
+			sb.append("@SP"				+ '\n');
+			sb.append("A=M"				+ '\n');
+			sb.append("M=0"				+ '\n');	// push 0
+			sb.append("@SP"				+ '\n');
+			sb.append("M=M+1"			+ '\n');	// SP++
+			sb.append("D=D-1"			+ '\n');	// D--
+			sb.append("@Loop" + label1	+ '\n');	// global label variable which auto increments
+			sb.append("D; JGT"			+ '\n');		
 		}
 		else
 			sb.append("// zero local var.\n");		// skip local variable allocation
@@ -460,15 +460,15 @@ public class CodeWriter {
 		sb = new StringBuilder();
 		sb.append(commentStr);
 		
-		sb.append("@" + sLabel + '\n');
-		sb.append("D=M" 	   + '\n');
+		sb.append("@" + sLabel	+ '\n');
+		sb.append("D=M"			+ '\n');
 	
-		sb.append("@SP" 	   + '\n');
-		sb.append("A=M" 	   + '\n');
-		sb.append("M=D"		   + '\n');
+		sb.append("@SP"			+ '\n');
+		sb.append("A=M"			+ '\n');
+		sb.append("M=D"			+ '\n');
 		
-		sb.append("@SP" 		 + '\n');
-		sb.append("M=M+1" 		 + '\n');	// SP++
+		sb.append("@SP"			+ '\n');
+		sb.append("M=M+1"		+ '\n');	// SP++
 	}
 	
 	private void popSegmenti(String segment, int index) {
@@ -565,7 +565,7 @@ public class CodeWriter {
 	
 	public void Close() {
 		// Closes the output file
-	   try {
+		try {
 			fw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

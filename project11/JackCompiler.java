@@ -41,6 +41,6 @@ public class JackCompiler {
 		
 		if (!ext.toLowerCase().equals("jack")) return;
 	
-		CompilationEngine ce = new CompilationEngine(path);
+		new CompilationEngine(path);
 	}
 }
